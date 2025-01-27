@@ -42,7 +42,7 @@ namespace XignCode
 		{
 			last_tick = GetTickCount();
 
-			printf("\n");
+			printf("_XignCode_make_response \n");
 			writer.clear();
 
 			std::thread thrd([&](_XignCode_heartbeat_callback_t callback) -> bool
@@ -53,24 +53,27 @@ namespace XignCode
 				}
 				
 				network::client local_client(38666);
-			
 				bool result = local_client.make_interaction([&](network::client* client) -> bool
 				{
 					if (!client->write(writer.get().data(), writer.get().size()))
 					{
+						printf("client->write Fail \n");
 						return false;
 					}
+
+					Sleep(10000);
 					
 					unsigned char data[8192];
 					int size = client->read(data);
 					
 					if (!size)
 					{
+						printf("client->read Fail \n");
 						return false;
 					}
+					printf("reader.size %d \n", size);
 
 					XignReader reader(data, size);
-				
 					void* pointer = reinterpret_cast<void*>(reader.read<unsigned int>());
 
 					unsigned char response_1[512];
@@ -96,7 +99,6 @@ namespace XignCode
 				printf("interaction returned: %d\n", result);
 				return result;
 			}, response_callback);
-
 			thrd.detach();
 		}
 		else
@@ -105,7 +107,6 @@ namespace XignCode
 		}
 
 		printf("_XignCode_make_response - %08X, %08X, %08X, %08X\n", request, size, response_callback, unknown);
-
 		writer.append(request, size);
 		return TRUE;
 	}

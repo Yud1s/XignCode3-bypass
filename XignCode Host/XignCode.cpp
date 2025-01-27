@@ -2,12 +2,13 @@
 
 namespace XignCode
 {
-	bool Initialize(std::wstring const& maplestory_directory)
+	bool Initialize(std::wstring const& strGameDirectory)
 	{
 		/* Load MapleStory stub */
-		HMODULE maplestory_module = LoadLibraryEx((maplestory_directory + std::wstring(L"\\MapleStory.exe")).c_str(), NULL, DONT_RESOLVE_DLL_REFERENCES);
+		//HMODULE hGameModule = LoadLibraryEx((strGameDirectory + std::wstring(L"\\MapleStory.exe")).c_str(), NULL, DONT_RESOLVE_DLL_REFERENCES);
+		HMODULE hGameModule = LoadLibraryEx((strGameDirectory + std::wstring(L"\\Audition.exe")).c_str(), NULL, DONT_RESOLVE_DLL_REFERENCES);
 		
-		if (!maplestory_module)
+		if (!hGameModule)
 		{
 			return false;
 		}
@@ -18,23 +19,23 @@ namespace XignCode
 			push ecx
 			mov eax,fs:[0x18]
 			mov eax,[eax+0x30]
-			mov ecx,maplestory_module
+			mov ecx,hGameModule
 			mov [eax+0x08],ecx
 			pop ecx
 			pop eax
 		};
 		
 		/* Load XignCode */
-		std::wstring xigncode_directory = maplestory_directory + L"\\XignCode3";
-		HMODULE xigncode_module = LoadLibrary((xigncode_directory + std::wstring(L"\\x3.xem")).c_str());
+		std::wstring strXignCodeDirectory = strGameDirectory + L"\\XIGNCODE";
+		HMODULE hXignCodeModule = LoadLibrary((strXignCodeDirectory + std::wstring(L"\\x3.xem")).c_str());
 	
-		if (!xigncode_module)
+		if (!hXignCodeModule)
 		{
 			return false;
 		}
 		
 		/* Get the function dispatch */
-		_XignCode_function_dispatch = reinterpret_cast<_XignCode_function_dispatch_t>(GetProcAddress(xigncode_module, reinterpret_cast<LPCSTR>(1)));
+		_XignCode_function_dispatch = reinterpret_cast<_XignCode_function_dispatch_t>(GetProcAddress(hXignCodeModule, reinterpret_cast<LPCSTR>(1)));
 
 		if (!_XignCode_function_dispatch)
 		{
@@ -48,8 +49,9 @@ namespace XignCode
 		{
 			return false;
 		}
-
-		if (!_XignCode_initialize(L"bD_cXsyitNtI", xigncode_directory.c_str(), 7))
+		// TW MapleStory? bD_cXsyitNtI
+		// TW Audition WX_cjbXsIB8u
+		if (!_XignCode_initialize(L"WX_cjbXsIB8u", strXignCodeDirectory.c_str(), 7))
 		{
 			return false;
 		}
@@ -96,11 +98,13 @@ namespace XignCode
 
 		if (_XignCode_function_dispatch(reinterpret_cast<void**>(&_XignCode_stop_service), FDT_STOP_SERVICE) || _XignCode_stop_service == nullptr)
 		{
+			printf("FDT_STOP_SERVICE Fail \n");
 			return false;
 		}
 
 		if (!_XignCode_stop_service())
 		{
+			printf("_XignCode_stop_service Fail \n");
 			return false;
 		}
 
@@ -109,11 +113,13 @@ namespace XignCode
 
 		if (_XignCode_function_dispatch(reinterpret_cast<void**>(&_XignCode_uninitialize), FDT_UNINITIALIZE) || _XignCode_uninitialize == nullptr)
 		{
+			printf("FDT_UNINITIALIZE Fail \n");
 			return false;
 		}
 
 		if (!_XignCode_uninitialize())
 		{
+			printf("_XignCode_uninitialize Fail \n");
 			return false;
 		}
 
@@ -126,11 +132,13 @@ namespace XignCode
 
 		if (_XignCode_function_dispatch(reinterpret_cast<void**>(&_XignCode_make_response), FDT_MAKE_RESPONSE) || _XignCode_make_response == nullptr)
 		{
+			printf("FDT_MAKE_RESPONSE Fail \n");
 			return false;
 		}
 
 		if (!_XignCode_make_response(request, size, heartbeat_callback, 0))
 		{
+			printf("_XignCode_make_response Fail \n");
 			return false;
 		}
 

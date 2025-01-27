@@ -109,8 +109,12 @@ namespace network
 		sockaddr_in addr;
 		addr.sin_family = AF_INET;
 		addr.sin_port = htons(this->port);
-		addr.sin_addr.s_addr = inet_addr("192.168.1.44"); // inet_addr("127.0.0.1");
 		std::fill(addr.sin_zero, addr.sin_zero + sizeof(addr.sin_zero), 0);
+		if (inet_pton(addr.sin_family, "192.168.1.200", &addr.sin_addr) != 1) {
+			std::cerr << "inet_pton failed\n";
+			WSACleanup();
+			return false;
+		}
 
 		return (connect(this->sock, reinterpret_cast<sockaddr*>(&addr), sizeof(sockaddr_in)) != SOCKET_ERROR);
 	}
@@ -207,6 +211,9 @@ namespace network
 
 		case WSAETIMEDOUT:
 			strcat(error_message, "You've timed out; it took you more than 10 seconds to communicate with the server.");
+			break;
+		case WSAECONNREFUSED:
+			strcat(error_message, "The server is not accepting connections.");
 			break;
 
 		default:

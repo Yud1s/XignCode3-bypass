@@ -67,6 +67,7 @@ namespace network
 
 	void server::begin_listen()
 	{
+		printf("begin_listen..\n");
 		for (;;)
 		{
 			sockaddr_in sender;
@@ -76,8 +77,11 @@ namespace network
 
 			if (desc == INVALID_SOCKET)
 			{
+				printf("INVALID_SOCKET \n");
 				continue;
 			}
+
+			printf("SET SESSION \n");
 
 			timeval timeout = { SOCKET_TIMEOUT, 0 };
 

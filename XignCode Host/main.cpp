@@ -13,7 +13,7 @@
 INT APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, INT nCmdShow)
 {
 	AllocConsole();
-	SetConsoleTitle(L"Full Bypass");
+	SetConsoleTitle(L"Audition");
 	AttachConsole(GetCurrentProcessId());
 	
 	FILE* pFile = nullptr;
@@ -21,18 +21,23 @@ INT APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	freopen_s(&pFile, "CON", "w", stdout);
 	freopen_s(&pFile, "CON", "w", stderr);
 
-	if (!XignCode::Initialize(L"C:\\MapleStory (Europe)"))
-	{
+
+	if (!XignCode::Initialize(L"C:\\Game\\Audition")) {
+		printf("XignCode::Initialize Fail \n");
+		return 0;
+	}
+	printf("XignCode::Uninitialize \n");
+	if (!XignCode::Uninitialize()) {
+		printf("XignCode::Uninitialize Fail \n");
 		return 0;
 	}
 	
 	network::server server;
-	
 	if (!server.initialize(38666))
 	{
 		return 0;
 	}
-	
 	server.begin_listen();
+
 	return 0;
 }

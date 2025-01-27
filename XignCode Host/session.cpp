@@ -25,6 +25,7 @@ namespace network
 	{
 		if (desc == INVALID_SOCKET)
 		{
+			printf("INVALID_SOCKET \n");
 			return false;
 		}
 
@@ -39,16 +40,23 @@ namespace network
 			{
 				return false;
 			}
+			printf("reader.size %d \n", size);
 
 			XignReader reader(data, size);
 
 			unsigned char buffer[512];
 			std::size_t buffer_size = 0;
 
+			if (!XignCode::Initialize(L"C:\\Game\\Audition")) {
+				printf("XignCode::Initialize Fail \n");
+				return 0;
+			}
+
 			while (buffer_size = reader.fetch(buffer), buffer_size)
 			{
 				XignCode::_XignCode_heartbeat_callback_t callback = [](void* pointer, unsigned char* response_1, unsigned char* response_2, unsigned int size, int unknown) -> unsigned int
 				{
+					printf("_XignCode_heartbeat_callback_t \n");
 					XignWriter writer;
 					writer.write<unsigned int>(reinterpret_cast<unsigned int>(pointer));
 					writer.append(response_1, size);
@@ -65,10 +73,17 @@ namespace network
 				}
 			}
 
+			printf("XignCode::Uninitialize \n");
+			if (!XignCode::Uninitialize()) {
+				printf("XignCode::Uninitialize Fail \n");
+				return 0;
+			}
+
 			return true;
 		}
 		catch (std::string& exception_string)
 		{
+			printf("exception_string %s \n", exception_string.c_str());
 			return false;
 		}
 

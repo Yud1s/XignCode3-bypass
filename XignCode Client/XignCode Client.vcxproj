@@ -80,7 +80,7 @@
       <ModuleDefinitionFile>export.def</ModuleDefinitionFile>
     </Link>
     <PostBuildEvent>
-      <Command>copy /Y "$(TargetDir)$(ProjectName).dll" "G:\Games\MapleStory (Europe)\XignCode\x3.xem"</Command>
+      <Command>rename "$(TargetDir)$(TargetFileName)" "x3.xem"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
